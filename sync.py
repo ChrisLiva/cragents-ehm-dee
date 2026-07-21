@@ -112,35 +112,38 @@ def adopt(targets: list[Target]) -> int:
     return EXIT_OK
 
 
-def classify(target: Target, new: str) -> tuple[str, str]:
-    """Return (state, drift_diff) for a target against its snapshot and destination.
+def classify(target: Target, new: str) -> tuple[str, str, str]:
+    """Return (state, drift_diff, destination content) for a target.
 
     States: 'no-file', 'no-snapshot', 'drifted', 'converged', 'pending', 'clean'.
+    The destination content is read once here and passed back so callers never
+    re-read a file whose existence the state already settled.
     """
     current = read(target.output)
     if current is None:
-        return "no-file", ""
+        return "no-file", "", ""
     snapshot = read(target.snapshot)
     if snapshot is None:
-        return "no-snapshot", ""
+        return "no-snapshot", "", current
     if snapshot != current:
         if current == new:
             # the hand-edit was back-ported into the template: the destination
             # already holds the new render, so there is nothing to discard.
-            return "converged", ""
-        return "drifted", diff(
+            return "converged", "", current
+        drift = diff(
             snapshot,
             current,
             f"{target.name} (last deployed)",
             f"{target.name} (on disk)",
         )
-    return ("clean" if current == new else "pending"), ""
+        return "drifted", drift, current
+    return ("clean" if current == new else "pending"), "", current
 
 
 def dry_run(targets: list[Target], renders: dict[str, str]) -> int:
     for target in targets:
         new = renders[target.name]
-        state, drift_diff = classify(target, new)
+        state, drift_diff, current = classify(target, new)
         if state == "drifted":
             print(f"{target.name}: DRIFTED — sync would refuse\n{drift_diff}")
         elif state == "no-snapshot":
@@ -154,7 +157,7 @@ def dry_run(targets: list[Target], renders: dict[str, str]) -> int:
             print(
                 f"{target.name}: PENDING\n"
                 + diff(
-                    read(target.output),
+                    current,
                     new,
                     f"{target.name} (on disk)",
                     f"{target.name} (new render)",
@@ -179,7 +182,7 @@ def sync(targets: list[Target], renders: dict[str, str], force: bool) -> int:
     failed = False
     for target in targets:
         new = renders[target.name]
-        state, drift_diff = classify(target, new)
+        state, drift_diff, current = classify(target, new)
 
         if state in ("drifted", "no-snapshot") and not force:
             if state == "drifted":
@@ -202,7 +205,7 @@ def sync(targets: list[Target], renders: dict[str, str], force: bool) -> int:
             # with no snapshot there is no drift diff to show, so show what is
             # actually being discarded: the destination as it stands today.
             discarded = drift_diff or diff(
-                read(target.output),
+                current,
                 new,
                 f"{target.name} (on disk)",
                 f"{target.name} (new render)",
