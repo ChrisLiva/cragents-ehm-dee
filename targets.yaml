@@ -1,0 +1,13 @@
+claude:
+  output: ~/.claude/CLAUDE.md
+  vars:
+    title: CLAUDE.md
+    audience: Claude Code agents
+    explore_model: Sonnet
+
+codex:
+  output: ~/.codex/AGENTS.md
+  vars:
+    title: AGENTS.md
+    audience: coding agents
+    explore_model: GPT-5.6-Terra-High
