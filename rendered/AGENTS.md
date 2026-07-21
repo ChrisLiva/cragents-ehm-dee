@@ -4,45 +4,30 @@ User-level preferences for coding agents.
 
 ## Working Principles
 
-Aim for the code a careful senior engineer would write. Bias toward caution over speed; for trivial tasks (single file, no new dependencies, no behavior change), skip the ceremony and just do them.
+**Facts vs. decisions.** A *fact* can be found by exploring the environment — the codebase, installed tools, a command's output — so look it up and confirm it rather than asking the user, and never act on a fact you haven't verified. Quick lookups inline; bigger sweeps and large generated reports go to a read-only subagent. A *decision* is the user's: a trade-off, priority, product choice, hard-to-reverse action, or scope change — anything with more than one defensible answer. Put each one to the user and wait — one question at a time, numbered concrete options, your recommendation marked. A choice with an obvious conventional default isn't a decision: proceed and state it.
 
-**Answer your own questions first.** Before asking the user something the codebase could tell you ("how does X work," "where is Y handled," "what calls Z"), find out yourself: handle quick lookups you can resolve in one or two reads inline, and delegate anything bigger to a read-only Explore/research subagent so the main context stays clean. Reserve questions for what only the user knows — intent, priorities, preferences, and external context.
+**Try the cheap experiment first.** When unsure how a tool or CLI behaves, run it once or read `--help` before crawling docs — and never pipe canned answers into an interactive CLI. Match investigation depth to the task: don't fan out audits or deep research when a direct attempt would answer faster.
 
-**When to ask vs. proceed.** Ask before acting when requirements admit competing interpretations, an action is hard to reverse, the work diverges from an agreed plan (say whether the plan was wrong, ambiguous, or vague; proceed without asking only when the right move is unambiguous), or scope would change — including a modest increase that would materially improve correctness or avoid near-term rework; that trade-off is the user's call. First apply *Answer your own questions first*; otherwise proceed on sensible defaults and state them as you go. Whenever you do ask, include your recommendation.
+**Simplicity first.** Build only what was requested; an abstraction earns its place at its second use. Before hand-rolling anything, check in order: existing helper/pattern/constant in this codebase (no new magic strings) → stdlib → native platform feature → already-installed dependency → a few lines of custom code. Never simplify away trust-boundary validation, data-loss handling, security, or accessibility.
 
-**Think before coding.** Push back when a request conflicts with these principles or rests on a fact you can't verify.
+**Surgical changes.** Touch only what the request requires; remove imports/variables/functions your change orphaned. Comments describe current state only — never history ("formerly X") or process references.
 
-**Simplicity first.** Write the minimum code that solves the problem: build only what was requested, let an abstraction earn its place at its second use, handle only errors that can actually occur. If 200 lines could be 50, rewrite it. Would a senior engineer call it overcomplicated? Then simplify.
+**Goal-driven execution.** Turn tasks into verifiable goals with a check per step. Deliver closed work: if you'd end with "one thing to note…" or a risk list, resolve those items before declaring done. Report the commit SHA when you commit.
 
-Climb the reuse ladder before writing custom code, stopping at the first rung that holds:
-(1) does it need to exist? — skip if speculative;
-(2) does a helper, util, type, or pattern already in this codebase do it? reuse it — re-implementing what's a few files over is the most common slop;
-(3) stdlib;
-(4) native platform feature (`<input type="date">` over a picker lib, CSS over JS, a DB constraint over app code);
-(5) an already-installed dependency — never add one for what a few lines do;
-(6) one line;
-(7) only then the minimum that works. The ladder runs *after* you understand the problem, not instead of it. Never simplify away trust-boundary validation, data-loss handling, security, or accessibility — those are not on the chopping block.
+**Subagents.** Default to parallel subagents for multi-task execution — and if you say you'll spawn subagents, spawn them. GPT-5.6-Terra-High for exploration/research; work needing real judgment (planning, review) inherits the session model.
 
-**Surgical changes.** Touch only what the request requires — every changed line should trace to it. Remove imports/variables/functions your changes orphaned. Mention unrelated dead code, but ask before deleting it.
+## Git
 
-**Goal-driven execution.** Turn tasks into verifiable goals ("fix the bug" → "write a failing test that reproduces it, then make it pass"). For multi-step work, state a brief plan with a verification check per step. Strong success criteria let you work independently; vague ones force constant clarification.
-
-**Subagents.** Use GPT-5.6-Terra-High for exploration and research subagents, GPT-5.6-Luna-High for simple mechanical tasks; let subagents doing work that needs real judgment (planning, review) inherit the session model.
+Trunk-based: commit and merge to main locally; push only when asked — commit and push are separately authorized. Delete merged branches and worktrees. Gitignore generated artifacts (reports, snapshots).
 
 ## Bug Fixing
 
-Fix bugs at the root, not the symptom: a report names a symptom, so before editing a function, grep its callers and fix once at the shared chokepoint — a guard in the shared function is a smaller diff than a guard in every caller, and patching only the path the report names leaves sibling callers broken. Then consider whether a design change would eliminate a whole class of future bugs in that area, and suggest it alongside the direct fix.
+Fix at the root: grep callers and fix once at the shared chokepoint, not just the reported path. Suggest a design change that would eliminate the bug class alongside the direct fix. For runtime/UI bugs, verify the fix in the running app, not just the test suite.
 
 ## Testing
 
-Test observable behavior, not implementation details: "if this code were rewritten in another language, which tests would confirm it still behaves the same?"
-
-Proactively invoke the "tdd" skill when writing tests, to follow best practices and avoid anti-patterns.
-
-## Code Review
-
-Coding agents often oscillate — a fix from one review gets reversed by the next. A careful senior engineer settles the question instead of relitigating it: when you notice oscillation (recent commits reverting the same change), stop and ask how to proceed, with your recommendation, and offer to record the decision in an ADR so future reviews don't reopen it.
+Test observable behavior, not implementation: "if this code were rewritten in another language, which tests would confirm it still behaves the same?"
 
 ## Linting, Formatting, Type Checking
 
-When you finish a series of code changes, run the project's lint, format, and type-check tools when available, using its preferred method and packages.
+After a series of code changes, run the project's lint, format, and type-check tools using its preferred method, and report the results.
