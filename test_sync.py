@@ -159,6 +159,52 @@ def test_hand_edited_destination_is_refused_with_its_diff(seeded: Repo):
     assert seeded.snapshot("claude").read_text() == CLAUDE_V1
 
 
+def test_back_ported_edit_is_accepted_not_refused(repo: Repo):
+    """The recovery path the refusal message advertises has to actually work."""
+    repo.claude_dest.write_text(CLAUDE_V1)
+    repo.codex_dest.write_text(CODEX_V1)
+    repo.run("--adopt")
+    # a hand-edit at the destination, then back-ported into the template
+    repo.claude_dest.write_text(CLAUDE_V2)
+    repo.write_template(TEMPLATE_V2)
+
+    result = repo.run()
+
+    assert result.returncode == 0
+    assert "REFUSED" not in result.stdout
+    assert repo.claude_dest.read_text() == CLAUDE_V2
+    assert repo.snapshot("claude").read_text() == CLAUDE_V2
+    # and the other target still gets its update
+    assert repo.codex_dest.read_text() == CODEX_V2
+
+
+def test_force_without_a_baseline_shows_what_it_discards(repo: Repo):
+    precious = "hand-maintained instructions\n"
+    repo.claude_dest.write_text(precious)
+    repo.codex_dest.write_text(precious)
+
+    result = repo.run("--force")
+
+    assert result.returncode == 0
+    assert "-hand-maintained instructions" in result.stdout
+    assert repo.claude_dest.read_text() == CLAUDE_V1
+    assert repo.snapshot("claude").read_text() == CLAUDE_V1
+
+
+def test_write_failure_does_not_block_the_other_target(seeded: Repo):
+    seeded.write_template(TEMPLATE_V2)
+    # an unwritable destination: a directory where the file should be
+    seeded.claude_dest.unlink()
+    seeded.claude_dest.mkdir()
+
+    result = seeded.run()
+
+    assert result.returncode == 2
+    assert "FAILED" in result.stderr
+    assert seeded.codex_dest.read_text() == CODEX_V2
+    assert seeded.snapshot("codex").read_text() == CODEX_V2
+
+
 def test_force_discards_drift_overwrites_and_restamps(seeded: Repo):
     seeded.claude_dest.write_text(CLAUDE_V1 + "\nHand-added memory line.\n")
     seeded.write_template(TEMPLATE_V2)
@@ -189,10 +235,10 @@ def test_rollback_does_not_false_flag_as_drift(seeded: Repo):
     assert seeded.run().returncode == 0
     assert seeded.claude_dest.read_text() == CLAUDE_V2
 
-    # `git checkout <ref> -- rendered/ template/` restores the v1 content
+    # `git checkout <ref> -- template/ rendered/` restores the v1 content. The
+    # template is what actually drives the rollback; rendered/ is regenerated.
     seeded.write_template(TEMPLATE_V1)
-    seeded.rendered("CLAUDE.md").write_text(CLAUDE_V1)
-    seeded.rendered("AGENTS.md").write_text(CODEX_V1)
+    seeded.rendered("CLAUDE.md").write_text("stale, must be regenerated\n")
 
     result = seeded.run()
 
@@ -200,6 +246,8 @@ def test_rollback_does_not_false_flag_as_drift(seeded: Repo):
     assert "REFUSED" not in result.stdout
     assert seeded.claude_dest.read_text() == CLAUDE_V1
     assert seeded.codex_dest.read_text() == CODEX_V1
+    assert seeded.rendered("CLAUDE.md").read_text() == CLAUDE_V1
+    assert seeded.snapshot("claude").read_text() == CLAUDE_V1
 
 
 def test_missing_template_var_fails_the_render(seeded: Repo):

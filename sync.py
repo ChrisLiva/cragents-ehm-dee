@@ -115,7 +115,7 @@ def adopt(targets: list[Target]) -> int:
 def classify(target: Target, new: str) -> tuple[str, str]:
     """Return (state, drift_diff) for a target against its snapshot and destination.
 
-    States: 'no-file', 'no-snapshot', 'drifted', 'pending', 'clean'.
+    States: 'no-file', 'no-snapshot', 'drifted', 'converged', 'pending', 'clean'.
     """
     current = read(target.output)
     if current is None:
@@ -124,6 +124,10 @@ def classify(target: Target, new: str) -> tuple[str, str]:
     if snapshot is None:
         return "no-snapshot", ""
     if snapshot != current:
+        if current == new:
+            # the hand-edit was back-ported into the template: the destination
+            # already holds the new render, so there is nothing to discard.
+            return "converged", ""
         return "drifted", diff(
             snapshot,
             current,
@@ -156,6 +160,8 @@ def dry_run(targets: list[Target], renders: dict[str, str]) -> int:
                     f"{target.name} (new render)",
                 )
             )
+        elif state == "converged":
+            print(f"{target.name}: up to date (drift baseline would be re-stamped)")
         else:
             print(f"{target.name}: up to date")
     return EXIT_OK
@@ -170,6 +176,7 @@ def deploy(target: Target, new: str) -> None:
 
 def sync(targets: list[Target], renders: dict[str, str], force: bool) -> int:
     refused = False
+    failed = False
     for target in targets:
         new = renders[target.name]
         state, drift_diff = classify(target, new)
@@ -191,18 +198,40 @@ def sync(targets: list[Target], renders: dict[str, str], force: bool) -> int:
             refused = True
             continue
 
-        if force and state == "drifted":
+        if force and state in ("drifted", "no-snapshot"):
+            # with no snapshot there is no drift diff to show, so show what is
+            # actually being discarded: the destination as it stands today.
+            discarded = drift_diff or diff(
+                read(target.output),
+                new,
+                f"{target.name} (on disk)",
+                f"{target.name} (new render)",
+            )
             print(f"{target.name}: --force, discarding this drift:")
-            print(drift_diff, end="")
+            print(discarded, end="")
 
         if state == "clean":
             print(f"{target.name}: up to date")
             continue
 
-        deploy(target, new)
-        verb = "created" if state == "no-file" else "updated"
-        print(f"{target.name}: {verb} {target.output}")
+        try:
+            deploy(target, new)
+        except OSError as exc:
+            print(
+                f"{target.name}: FAILED — could not write {target.output}: {exc}",
+                file=sys.stderr,
+            )
+            failed = True
+            continue
 
+        if state == "converged":
+            print(f"{target.name}: already matched the template — baseline re-stamped")
+        else:
+            verb = "created" if state == "no-file" else "updated"
+            print(f"{target.name}: {verb} {target.output}")
+
+    if failed:
+        return EXIT_ERROR
     return EXIT_REFUSED if refused else EXIT_OK
 
 

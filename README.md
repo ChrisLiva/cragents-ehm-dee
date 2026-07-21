@@ -25,19 +25,24 @@ Run everything from the repo root — all paths resolve from the cwd.
 Editing instructions: change `template/instructions.md.j2` (or a var in
 `targets.yaml`), run `./sync.py --dry-run` to read the diff, then `./sync.py`.
 Commit `rendered/` alongside the template so history shows what each
-destination actually received.
+destination was rendered as — note that `rendered/` is refreshed on every run,
+including one where a copy was refused, so commit after a run that succeeded.
 
-Exit codes: `0` clean, `1` at least one target refused, `2` config or render
-error.
+Exit codes: `0` clean, `1` at least one target refused, `2` config, render, or
+write error.
 
 ## Drift guard
 
 `.last-deployed/<target>.md` is a full copy of what `sync` last wrote. If a
 destination no longer matches its baseline someone hand-edited it (an in-session
 rewrite, a `#`-memory append), so `sync` refuses that target and prints the
-diff. Back-port the edit into the template by hand, then sync again — or discard
-it with `--force`. Targets are independent: a drifted CLAUDE.md never blocks
-AGENTS.md.
+diff. Back-port the edit into the template by hand, then sync again — once the
+render matches what's on disk the guard accepts it and re-stamps the baseline.
+Or discard the edit with `--force`. Targets are independent: a drifted
+CLAUDE.md never blocks AGENTS.md.
+
+`--force` applies to every target in the run, so back-port first when only one
+target drifted rather than forcing past both.
 
 The baseline lives outside git on purpose. Comparing against `rendered/` at HEAD
 would make every rollback look like drift.
@@ -45,12 +50,14 @@ would make every rollback look like drift.
 ## Rollback
 
 ```sh
-git checkout <ref> -- rendered/ template/
+git checkout <ref> -- template/ targets.yaml rendered/
 ./sync.py
 ```
 
 The destinations still match their baselines, so this applies cleanly with no
-drift flag.
+drift flag. `template/` and `targets.yaml` are what drive the rollback —
+`rendered/` is regenerated from them on every run, so restoring it alone
+changes nothing.
 
 ## Scope
 
