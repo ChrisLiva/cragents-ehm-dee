@@ -17,10 +17,22 @@ SYNC = Path(__file__).parent / "sync.py"
 TEMPLATE_V1 = "# {{ title }}\n\nHello, {{ audience }}.\n"
 TEMPLATE_V2 = "# {{ title }}\n\nHello again, {{ audience }}.\n"
 
+# home branch renders identically to TEMPLATE_V1, work branch is terse
+TEMPLATE_PROFILED = (
+    "# {{ title }}\n\n"
+    "{% if work %}\n"
+    "Terse, {{ audience }}.\n"
+    "{% else %}\n"
+    "Hello, {{ audience }}.\n"
+    "{% endif %}\n"
+)
+
 CLAUDE_V1 = "# CLAUDE.md\n\nHello, Claude Code agents.\n"
 CODEX_V1 = "# AGENTS.md\n\nHello, coding agents.\n"
 CLAUDE_V2 = "# CLAUDE.md\n\nHello again, Claude Code agents.\n"
 CODEX_V2 = "# AGENTS.md\n\nHello again, coding agents.\n"
+CLAUDE_WORK = "# CLAUDE.md\n\nTerse, Claude Code agents.\n"
+CODEX_WORK = "# AGENTS.md\n\nTerse, coding agents.\n"
 
 
 class Repo:
@@ -37,6 +49,7 @@ class Repo:
             cwd=self.root,
             capture_output=True,
             text=True,
+            check=False,
         )
 
     def write_template(self, body: str) -> None:
@@ -44,6 +57,9 @@ class Repo:
 
     def rendered(self, name: str) -> Path:
         return self.root / "rendered" / name
+
+    def rendered_work(self, name: str) -> Path:
+        return self.root / "rendered" / "work" / name
 
     def snapshot(self, name: str) -> Path:
         return self.root / ".last-deployed" / f"{name}.md"
@@ -261,8 +277,72 @@ def test_missing_template_var_fails_the_render(seeded: Repo):
     assert seeded.rendered("CLAUDE.md").read_text() == CLAUDE_V1
 
 
+def test_work_flag_deploys_the_work_profile(seeded: Repo):
+    seeded.write_template(TEMPLATE_PROFILED)
+
+    result = seeded.run("--work")
+
+    assert result.returncode == 0
+    assert seeded.claude_dest.read_text() == CLAUDE_WORK
+    assert seeded.codex_dest.read_text() == CODEX_WORK
+    assert seeded.snapshot("claude").read_text() == CLAUDE_WORK
+    assert seeded.rendered_work("CLAUDE.md").read_text() == CLAUDE_WORK
+    # the full-prose render is still written alongside
+    assert seeded.rendered("CLAUDE.md").read_text() == CLAUDE_V1
+
+
+def test_both_profiles_rendered_on_a_plain_run(seeded: Repo):
+    seeded.write_template(TEMPLATE_PROFILED)
+
+    result = seeded.run()
+
+    assert result.returncode == 0
+    # home branch matches what is deployed, so the destination is untouched
+    assert "up to date" in result.stdout
+    assert seeded.claude_dest.read_text() == CLAUDE_V1
+    assert seeded.rendered_work("CLAUDE.md").read_text() == CLAUDE_WORK
+    assert seeded.rendered_work("AGENTS.md").read_text() == CODEX_WORK
+
+
+def test_switching_profiles_is_pending_not_drift(seeded: Repo):
+    """A plain run after --work deploys the full-prose profile back (and vice
+    versa) — a profile switch is a pending update, never a drift refusal."""
+    seeded.write_template(TEMPLATE_PROFILED)
+    assert seeded.run("--work").returncode == 0
+
+    result = seeded.run()
+
+    assert result.returncode == 0
+    assert "REFUSED" not in result.stdout
+    assert seeded.claude_dest.read_text() == CLAUDE_V1
+    assert seeded.snapshot("claude").read_text() == CLAUDE_V1
+
+
+def test_work_profile_still_guards_drift(seeded: Repo):
+    seeded.write_template(TEMPLATE_PROFILED)
+    assert seeded.run("--work").returncode == 0
+    seeded.claude_dest.write_text(CLAUDE_WORK + "\nHand-added memory line.\n")
+
+    result = seeded.run("--work")
+
+    assert result.returncode == 1
+    assert "+Hand-added memory line." in result.stdout
+    assert "Hand-added memory line." in seeded.claude_dest.read_text()
+    assert seeded.snapshot("claude").read_text() == CLAUDE_WORK
+
+
+def test_template_without_profiles_ignores_work_flag(seeded: Repo):
+    result = seeded.run("--work")
+
+    assert result.returncode == 0
+    assert "up to date" in result.stdout
+    assert seeded.claude_dest.read_text() == CLAUDE_V1
+
+
 def test_missing_targets_yaml_is_a_clear_error(tmp_path: Path):
-    result = subprocess.run([str(SYNC)], cwd=tmp_path, capture_output=True, text=True)
+    result = subprocess.run(
+        [str(SYNC)], cwd=tmp_path, capture_output=True, text=True, check=False
+    )
 
     assert result.returncode == 2
     assert "targets.yaml" in result.stderr

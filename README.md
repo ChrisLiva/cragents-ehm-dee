@@ -17,6 +17,7 @@ Run everything from the repo root — all paths resolve from the cwd.
 
 ```sh
 ./sync.py             # render, guard, copy to both destinations
+./sync.py --work      # same, but deploy the terse work profile
 ./sync.py --dry-run   # report drifted / pending / up to date; write nothing
 ./sync.py --adopt     # bless each destination's current content as its baseline
 ./sync.py --force     # print the drift being discarded, then overwrite
@@ -30,6 +31,21 @@ including one where a copy was refused, so commit after a run that succeeded.
 
 Exit codes: `0` clean, `1` at least one target refused, `2` config, render, or
 write error.
+
+## Work profile
+
+The template carries two profiles behind a `work` variable: the full-prose
+default, and a terse token-minimal variant for work machines (`{% if work %}`
+branches, section by section, so an edit can't silently miss one profile).
+`./sync.py --work` deploys the terse profile; a plain run deploys full prose.
+Every run renders **both** profiles — full prose to `rendered/`, terse to
+`rendered/work/` — so both stay committed and reviewable; only the selected
+one is copied to the destinations.
+
+On a work machine, always pass `--work`. A plain run there is not an error:
+the destination matches its baseline, so the full-prose render shows up as a
+pending update and gets deployed over the terse one. Recover by re-running
+`./sync.py --work`.
 
 ## Drift guard
 

@@ -22,6 +22,7 @@ is overwritten on every `sync.py` run. To change what agents are told, edit
 .venv/bin/pytest -q -k force_discards   # single test by name substring
 uvx ruff check . && uvx ruff format .   # lint / format (ruff is not on PATH)
 ./sync.py --dry-run                     # safe: writes nothing
+./sync.py --work --dry-run              # preview the terse work profile
 ```
 
 `uv run pytest` does **not** work — `pyproject.toml` has only a `[tool.pyright]`
@@ -40,7 +41,10 @@ declares its own `jinja2`/`pyyaml` deps, so it runs standalone regardless of `.v
    Each target carries its destination, its `rendered/<basename>` file, and its
    `.last-deployed/<name>.md` drift baseline.
 2. `render()` — Jinja with `StrictUndefined`, so a template var missing from
-   `targets.yaml` is a hard `ConfigError`, not a silent blank.
+   `targets.yaml` is a hard `ConfigError`, not a silent blank. The template's
+   `work` variable selects between its two profiles (full prose vs terse);
+   `--work` deploys the terse one, but every run renders both, to `rendered/`
+   and `rendered/work/`. Edit both branches of a section, or the profiles diverge.
 3. `classify(target, new)` — the core state machine, and the place to start when
    changing behavior. Returns one of `no-file`, `no-snapshot`, `drifted`,
    `converged`, `pending`, `clean` from the three-way comparison of *baseline* vs

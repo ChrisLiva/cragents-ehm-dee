@@ -5,6 +5,10 @@
 # ///
 """Render the master instruction template to each target and copy it into place.
 
+The template has two profiles selected by the `work` variable: full prose by
+default, terse with --work. Both are rendered every run (rendered/ and
+rendered/work/); only the selected profile is deployed.
+
 Resolves targets.yaml, template/, rendered/ and .last-deployed/ from the cwd.
 Never touches git.
 """
@@ -37,7 +41,11 @@ class Target:
         self.output = output
         self.vars = variables
         self.rendered = root / "rendered" / output.name
+        self.rendered_work = root / "rendered" / "work" / output.name
         self.snapshot = root / ".last-deployed" / f"{name}.md"
+
+    def rendered_for(self, work: bool) -> Path:
+        return self.rendered_work if work else self.rendered
 
 
 def load_targets(root: Path) -> list[Target]:
@@ -69,11 +77,13 @@ def load_targets(root: Path) -> list[Target]:
     return targets
 
 
-def render(root: Path, target: Target) -> str:
+def render(root: Path, target: Target, work: bool) -> str:
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(root / "template"),
         undefined=jinja2.StrictUndefined,
         keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
         autoescape=False,
     )
     try:
@@ -81,7 +91,7 @@ def render(root: Path, target: Target) -> str:
     except jinja2.TemplateNotFound as exc:
         raise ConfigError(f"no template/{TEMPLATE_NAME} in {root}") from exc
     try:
-        return template.render(**target.vars)
+        return template.render(**{**target.vars, "work": work})
     except jinja2.UndefinedError as exc:
         raise ConfigError(f"target {target.name!r}: render failed: {exc}") from exc
 
@@ -170,14 +180,16 @@ def dry_run(targets: list[Target], renders: dict[str, str]) -> int:
     return EXIT_OK
 
 
-def deploy(target: Target, new: str) -> None:
+def deploy(target: Target, new: str, work: bool) -> None:
     target.output.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(target.rendered, target.output)
+    shutil.copyfile(target.rendered_for(work), target.output)
     target.snapshot.parent.mkdir(parents=True, exist_ok=True)
     target.snapshot.write_text(new)
 
 
-def sync(targets: list[Target], renders: dict[str, str], force: bool) -> int:
+def sync(
+    targets: list[Target], renders: dict[str, str], force: bool, work: bool
+) -> int:
     refused = False
     failed = False
     for target in targets:
@@ -218,7 +230,7 @@ def sync(targets: list[Target], renders: dict[str, str], force: bool) -> int:
             continue
 
         try:
-            deploy(target, new)
+            deploy(target, new, work)
         except OSError as exc:
             print(
                 f"{target.name}: FAILED — could not write {target.output}: {exc}",
@@ -258,6 +270,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="overwrite drifted destinations, printing the diff",
     )
+    parser.add_argument(
+        "--work",
+        action="store_true",
+        help="deploy the terse work profile instead of the full-prose default",
+    )
     args = parser.parse_args(argv)
 
     root = Path.cwd()
@@ -265,19 +282,27 @@ def main(argv: list[str] | None = None) -> int:
         targets = load_targets(root)
         if args.adopt:
             return adopt(targets)
-        renders = {t.name: render(root, t) for t in targets}
+        renders = {
+            (t.name, profile): render(root, t, profile)
+            for t in targets
+            for profile in (False, True)
+        }
     except ConfigError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR
 
+    active = {t.name: renders[(t.name, args.work)] for t in targets}
+
     if args.dry_run:
-        return dry_run(targets, renders)
+        return dry_run(targets, active)
 
     for target in targets:
-        target.rendered.parent.mkdir(parents=True, exist_ok=True)
-        target.rendered.write_text(renders[target.name])
+        for profile in (False, True):
+            rendered = target.rendered_for(profile)
+            rendered.parent.mkdir(parents=True, exist_ok=True)
+            rendered.write_text(renders[(target.name, profile)])
 
-    return sync(targets, renders, args.force)
+    return sync(targets, active, args.force, args.work)
 
 
 if __name__ == "__main__":
