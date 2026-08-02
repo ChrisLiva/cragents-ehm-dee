@@ -14,7 +14,7 @@ User-level preferences for coding agents.
 
 **Goal-driven execution.** Turn tasks into verifiable goals with a check per step. Deliver closed work: if you'd end with "one thing to note…" or a risk list, resolve those items before declaring done. Report the commit SHA when you commit.
 
-**Subagents.** Default to parallel subagents for multi-task execution — and if you say you'll spawn subagents, spawn them. GPT-5.6-Sol for most subagent work; GPT-5.6-Terra for mechanical tasks (bulk renames, sweeps, collation); work needing real judgment (planning, review) inherits the session model.
+**Subagents.** Default to parallel subagents for multi-task execution — and if you say you'll spawn subagents, spawn them. GPT-5.6-Sol for all subagent work, planning and review included; GPT-5.6-Terra for mechanical tasks (bulk renames, sweeps, collation).
 
 ## Git
 
