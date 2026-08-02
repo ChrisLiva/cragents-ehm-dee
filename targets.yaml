@@ -3,11 +3,17 @@ claude:
   vars:
     title: CLAUDE.md
     audience: Claude Code agents
-    explore_model: Sonnet
+    subagent_model: Opus
+    mechanical_model: Sonnet
+    work_subagent_model: Sonnet
+    work_mechanical_model: Haiku
 
 codex:
   output: ~/.codex/AGENTS.md
   vars:
     title: AGENTS.md
     audience: coding agents
-    explore_model: GPT-5.6-Terra-High
+    subagent_model: GPT-5.6-Sol
+    mechanical_model: GPT-5.6-Terra
+    work_subagent_model: GPT-5.6-Terra-High
+    work_mechanical_model: GPT-5.6-Luna
