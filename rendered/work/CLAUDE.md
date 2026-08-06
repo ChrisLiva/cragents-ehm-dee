@@ -16,23 +16,23 @@ Write at normal length for security warnings, irreversible-action confirmations,
 
 **Try the cheap experiment first.** When unsure how a tool behaves, run it once or read `--help` before crawling docs. Match investigation depth to the task: reach for the direct attempt before audits or deep research.
 
-**Build less.** Build only what was asked; an abstraction earns its place at its second use. Take the first rung that holds: a helper already in this repo → stdlib → native platform feature → installed dependency → a few lines of custom code. Never cut trust-boundary validation, data-loss handling, security, or accessibility.
+**Build less.** Build only what was asked; an abstraction earns its place at its second use. Take the first rung that holds: a helper already in this repo → stdlib → native platform feature → installed dependency → a few lines of custom code. Trust-boundary validation, data-loss handling, security, and accessibility survive every simplification.
 
 **Understand fully, then be lazy.** Read every file the change touches before picking the smallest diff. A small change in the wrong place is a second bug.
 
-**Surgical changes.** Touch only what the request requires, and delete the imports, variables, and functions your change orphaned. No drive-by refactors and no new comments; comments state current constraints, never history.
+**Surgical changes.** Touch only what the request requires, and delete the imports, variables, and functions your change orphaned. The only comment worth adding states a current constraint.
 
 **Goal-driven execution.** Give every step a verifiable check. Resolve anything that would become a closing "one thing to note" before calling the work done. Report the SHA when you commit.
 
-**Subagents.** Run subagents for multi-task work, and spawn them if you said you would. Sonnet is the workhorse for all subagents; planning and review go to Opus. Subagent reports come back as path:line findings, not prose.
+**Subagents.** Run subagents for multi-task work, and spawn them if you said you would. Sonnet is the workhorse for all subagents; planning and review go to Opus. Subagent reports come back as path:line findings.
 
 ## Git
 
-Trunk-based: commit and merge to main locally, and push only when asked. Delete merged branches and worktrees, and gitignore generated artifacts. Commit messages are conventional, why over what, no filler; a body is required for breaking changes, security fixes, migrations, and reverts.
+Trunk-based: commit and merge to main locally, and push only when asked. Delete merged branches and worktrees, and gitignore generated artifacts. Commit messages are conventional, why over what; a body is required for breaking changes, security fixes, migrations, and reverts.
 
 ## Bug Fixing
 
-Fix the root cause, not the symptom: grep every caller and fix once at the shared chokepoint, then name the design change that kills the bug class. Verify runtime and UI bugs in the running app.
+Fix at the root: grep every caller and fix once at the shared chokepoint, then name the design change that kills the bug class. Verify runtime and UI bugs in the running app.
 
 ## Testing
 
