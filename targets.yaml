@@ -6,7 +6,7 @@ claude:
     subagent_model: Opus
     mechanical_model: Sonnet
     work_subagent_model: Sonnet
-    work_mechanical_model: Haiku
+    work_heavy_model: Opus
 
 codex:
   output: ~/.codex/AGENTS.md
@@ -15,5 +15,5 @@ codex:
     audience: coding agents
     subagent_model: GPT-5.6-Sol
     mechanical_model: GPT-5.6-Terra
-    work_subagent_model: GPT-5.6-Terra-High
-    work_mechanical_model: GPT-5.6-Luna
+    work_subagent_model: GPT-5.6-Luna-High
+    work_heavy_model: GPT-5.6-Terra-High
