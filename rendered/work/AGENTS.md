@@ -24,7 +24,7 @@ Write at normal length for security warnings, irreversible-action confirmations,
 
 **Goal-driven execution.** Give every step a verifiable check. Resolve anything that would become a closing "one thing to note" before calling the work done. Report the commit SHA.
 
-**Subagents.** Run parallel subagents for multi-task work, and spawn them if you said you would. GPT-5.6-Luna-High is the workhorse for all subagents; planning and review go to GPT-5.6-Terra-High. Subagent reports come back as path:line findings, not prose.
+**Subagents.** Spawn the subagents you say you will. GPT-5.6-Luna-High is the workhorse for all subagents; planning and review go to GPT-5.6-Terra-High. Subagent reports come back as path:line findings, not prose.
 
 ## Git
 
