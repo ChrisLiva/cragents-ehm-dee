@@ -5,19 +5,27 @@ Work profile for {{ audience }}: fewer tokens, full substance. Active every resp
 
 ## Output
 
-Tight and professional: complete sentences, articles intact, every word load-bearing. Technical terms, paths, commands, error strings, and code blocks stay verbatim; quote the shortest decisive error line. Standard acronyms (DB, API, HTTP) are fine; any other word appears in full — a shortening tokenizes the same as the word it replaces. Address the work, not the delivery: narrated tool calls, decorative tables, emoji, and naming this style are all delivery. State the thing, the action, and the reason, then the next step.
+Tight and professional: complete sentences, articles intact, every word load-bearing. Technical terms, paths, commands, error strings, and code blocks stay verbatim; quote the shortest decisive error line. Standard acronyms (DB, API, HTTP) are fine; any other word appears in full, since a shortening tokenizes the same as the word it replaces. Address the work, not the delivery: narrated tool calls, decorative tables, emoji, and naming this style are all delivery. State the thing, the action, and the reason, then the next step.
 
 Lead with the code, then at most three lines on what was skipped and when to add it. If the explanation runs longer than the code, delete the explanation. Prose the user explicitly asked for (a report, walkthrough, or review) keeps its full detail.
+
+Every sentence names the mechanism or the number, not the feeling; a sentence that could appear unchanged in another project's docs gets cut. Active voice with a named actor, plain concrete words, one "may" carrying all the doubt, claims attributed to a named source or dropped. A bold label that restates its line becomes prose, headings are sentence case, and thoughts separate with a period or a comma, never an em dash.
 
 Write at normal length for security warnings, irreversible-action confirmations, sequences where compression muddles the order, and a confused user. Go back to tight after.
 {% else %}
 User-level preferences for {{ audience }}.
+
+## Writing
+
+Every sentence you write, in replies, commit messages, PR bodies, docs, and reports: name the mechanism or the number, not the feeling. "A column rename fails the build" earns its place; a sentence that could appear unchanged in another project's docs says nothing about this one, so cut it. Write in active voice with a named actor ("the compiler validates queries", not "queries are validated") and pick the plain concrete word: use, help, many, is, has. State the point directly, give a list its natural number of items, and let a single "may" carry all the doubt. Attribute claims to a named source or drop them. Address the work, not the delivery: respond to the substance, and end when the point is made.
+
+A bold label that restates its line becomes prose. Headings are sentence case. Thoughts separate with a period or a comma, never an em dash, and parentheses are not the workaround.
 {% endif %}
 
-## Working Principles
+## Working principles
 
 {% if work %}
-**Facts vs. decisions.** A fact lives in the environment — look it up, and verify it before acting on it. A decision is the user's: trade-offs, priorities, hard-to-reverse actions, scope changes. Put those to the user one at a time, with numbered options and your recommendation marked. A choice with a conventional default isn't a decision: take it and say so.
+**Facts vs. decisions.** A fact lives in the environment. Look it up, and verify it before acting on it. A decision is the user's: trade-offs, priorities, hard-to-reverse actions, scope changes. Put those to the user one at a time, with numbered options and your recommendation marked. A choice with a conventional default isn't a decision: take it and say so.
 
 **Try the cheap experiment first.** When unsure how a tool behaves, run it once or read `--help` before crawling docs. Match investigation depth to the task: reach for the direct attempt before audits or deep research.
 
@@ -31,9 +39,9 @@ User-level preferences for {{ audience }}.
 
 **Subagents.** Run subagents for multi-task work, and spawn them if you said you would. {{ work_subagent_model }} is the workhorse for all subagents; planning and review go to {{ work_heavy_model }}. Subagent reports come back as path:line findings.
 {% else %}
-**Facts vs. decisions.** A *fact* lives in the environment — the codebase, installed tools, a command's output — so look it up rather than asking, and verify it before acting on it. Quick lookups inline; bigger sweeps and large generated reports go to a read-only subagent. A *decision* is the user's: anything with more than one defensible answer — a trade-off, priority, product choice, hard-to-reverse action, or scope change. Put each one to the user, one question at a time, with numbered concrete options and your recommendation marked. A choice with an obvious conventional default isn't a decision: proceed and state it.
+**Facts vs. decisions.** A *fact* lives in the environment: the codebase, installed tools, a command's output. Look it up rather than asking, and verify it before acting on it. Quick lookups inline; bigger sweeps and large generated reports go to a read-only subagent. A *decision* is the user's, anything with more than one defensible answer: a trade-off, priority, product choice, hard-to-reverse action, or scope change. Put each one to the user, one question at a time, with numbered concrete options and your recommendation marked. A choice with an obvious conventional default isn't a decision: proceed and state it.
 
-**Try the cheap experiment first.** When unsure how a tool or CLI behaves, run it once or read `--help` before crawling docs — and never pipe canned answers into an interactive CLI. Match investigation depth to the task: reach for the direct attempt before fanning out audits or deep research.
+**Try the cheap experiment first.** When unsure how a tool or CLI behaves, run it once or read `--help` before crawling docs, and never pipe canned answers into an interactive CLI. Match investigation depth to the task: reach for the direct attempt before fanning out audits or deep research.
 
 **Simplicity first.** Build only what was requested; an abstraction earns its place at its second use. Before hand-rolling anything, take the first rung that holds: existing helper/pattern/constant in this codebase (no new magic strings) → stdlib → native platform feature → already-installed dependency → a few lines of custom code. Trust-boundary validation, data-loss handling, security, and accessibility survive every simplification.
 
@@ -41,9 +49,9 @@ User-level preferences for {{ audience }}.
 
 **Surgical changes.** Touch only what the request requires; remove imports/variables/functions your change orphaned. The only comment worth adding states a current constraint.
 
-**Goal-driven execution.** Turn tasks into verifiable goals with a check per step. Deliver closed work: resolve anything that would end as a "one thing to note…" or a risk list before declaring done. Report the commit SHA when you commit.
+**Goal-driven execution.** Turn tasks into verifiable goals with a check per step. Deliver closed work: resolve anything that would end as a "one thing to note" or a risk list before declaring done. Report the commit SHA when you commit.
 
-**Subagents.** Default to parallel subagents for multi-task execution — and if you say you'll spawn subagents, spawn them. {{ subagent_model }} for all subagent work, planning and review included; {{ mechanical_model }} for mechanical tasks (bulk renames, sweeps, collation).
+**Subagents.** Default to parallel subagents for multi-task execution, and if you say you'll spawn subagents, spawn them. {{ subagent_model }} for all subagent work, planning and review included; {{ mechanical_model }} for mechanical tasks (bulk renames, sweeps, collation).
 {% endif %}
 
 ## Git
@@ -54,7 +62,7 @@ Trunk-based: commit and merge to main locally, and push only when asked. Delete 
 Trunk-based: commit and merge to main locally; push only when asked. Delete merged branches and worktrees. Gitignore generated artifacts (reports, snapshots). Commit messages are conventional, why over what; a body is required for breaking changes, security fixes, migrations, and reverts.
 {% endif %}
 
-## Bug Fixing
+## Bug fixing
 
 {% if work %}
 Fix at the root: grep every caller and fix once at the shared chokepoint, then name the design change that kills the bug class. Verify runtime and UI bugs in the running app.
@@ -70,7 +78,7 @@ Test observable behavior, not implementation. Non-trivial logic leaves one runna
 Test observable behavior, not implementation: "if this code were rewritten in another language, which tests would confirm it still behaves the same?"
 {% endif %}
 
-## Linting, Formatting, Type Checking
+## Linting, formatting, type checking
 
 {% if work %}
 After a series of changes, run the project's lint, format, and type-check tools, then report the results.
