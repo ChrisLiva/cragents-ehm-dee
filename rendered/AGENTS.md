@@ -10,6 +10,8 @@ User-level preferences for coding agents.
 
 **Simplicity first.** Build only what was requested; an abstraction earns its place at its second use. Before hand-rolling anything, take the first rung that holds: existing helper/pattern/constant in this codebase (no new magic strings) → stdlib → native platform feature → already-installed dependency → a few lines of custom code. Trust-boundary validation, data-loss handling, security, and accessibility survive every simplification.
 
+**Understand fully, then be lazy.** Read every file the change touches before picking the smallest diff. A small change in the wrong place is a second bug.
+
 **Surgical changes.** Touch only what the request requires; remove imports/variables/functions your change orphaned. The only comment worth adding states a current constraint.
 
 **Goal-driven execution.** Turn tasks into verifiable goals with a check per step. Deliver closed work: resolve anything that would end as a "one thing to note…" or a risk list before declaring done. Report the commit SHA when you commit.
@@ -18,7 +20,7 @@ User-level preferences for coding agents.
 
 ## Git
 
-Trunk-based: commit and merge to main locally; push only when asked. Delete merged branches and worktrees. Gitignore generated artifacts (reports, snapshots).
+Trunk-based: commit and merge to main locally; push only when asked. Delete merged branches and worktrees. Gitignore generated artifacts (reports, snapshots). Commit messages are conventional, why over what; a body is required for breaking changes, security fixes, migrations, and reverts.
 
 ## Bug Fixing
 
