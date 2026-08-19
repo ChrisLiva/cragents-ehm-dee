@@ -10,7 +10,7 @@ User-level preferences for Claude Code agents.
 
 **Simplicity first.** Build only what was requested; an abstraction earns its place at its second use. Before hand-rolling anything, take the first rung that holds: existing helper/pattern/constant in this codebase (no new magic strings) → stdlib → native platform feature → already-installed dependency → a few lines of custom code. Trust-boundary validation, data-loss handling, security, and accessibility survive every simplification.
 
-**Understand fully, then be lazy.** Read every file the change touches before picking the smallest diff. A small change in the wrong place is a second bug.
+**Understand fully, change minimally.** Read every file the change touches before picking the smallest diff. A small change in the wrong place is a second bug.
 
 **Surgical changes.** Touch only what the request requires; remove imports/variables/functions your change orphaned. The only comment worth adding states a current constraint.
 
