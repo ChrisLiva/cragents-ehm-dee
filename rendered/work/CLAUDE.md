@@ -8,13 +8,13 @@ Tight and professional: complete sentences, articles intact, every word load-bea
 
 Lead with the code, then at most three lines on what was skipped and when to add it. If the explanation runs longer than the code, delete the explanation. Prose the user explicitly asked for (a report, walkthrough, or review) keeps its full detail.
 
-Every sentence names the mechanism or the number, not the feeling; a sentence that could appear unchanged in another project's docs gets cut. Active voice with a named actor, plain concrete words, one "may" carrying all the doubt, claims attributed to a named source or dropped. A bold label that restates its line becomes prose, headings are sentence case, and thoughts separate with a period or a comma, never an em dash.
+Every sentence names the mechanism or the number, not the feeling; a sentence that could appear unchanged in another project's docs gets cut. Active voice with a named actor, plain concrete words, one "may" carrying all the doubt, claims attributed to a named source or dropped, a failed attempt kept a claim about your method rather than about the thing. A bold label that restates its line becomes prose, headings are sentence case, and thoughts separate with a period or a comma, never an em dash.
 
 Write at normal length for security warnings, irreversible-action confirmations, sequences where compression muddles the order, and a confused user. Go back to tight after.
 
 ## Working principles
 
-**Facts vs. decisions.** A fact lives in the environment. Look it up, and verify it before acting on it. A decision is the user's: trade-offs, priorities, hard-to-reverse actions, scope changes. Put those to the user one at a time, with numbered options and your recommendation marked. A choice with a conventional default isn't a decision: take it and say so.
+**Facts vs. decisions.** A fact lives in the environment. Look it up, and verify it before you act on it, hand it to the user, or build a question's options on it. A decision is the user's: trade-offs, priorities, hard-to-reverse actions, scope changes. Put those to the user with numbered options and your recommendation marked. A choice with a conventional default isn't a decision: take it and say so.
 
 **Try the cheap experiment first.** When unsure how a tool behaves, run it once or read `--help` before crawling docs. Match investigation depth to the task: reach for the direct attempt before audits or deep research.
 
@@ -24,13 +24,13 @@ Write at normal length for security warnings, irreversible-action confirmations,
 
 **Surgical changes.** Touch only what the request requires, and delete the imports, variables, and functions your change orphaned. The only comment worth adding states a current constraint.
 
-**Goal-driven execution.** Give every step a verifiable check. Resolve anything that would become a closing "one thing to note" before calling the work done. Report the SHA when you commit.
+**Goal-driven execution.** Give every step a verifiable check. Resolve anything that would become a closing "one thing to note" before calling the work done. Name a defect or leftover by its file path before describing it. Report the SHA when you commit.
 
-**Subagents.** Run subagents for multi-task work, and spawn them if you said you would. Sonnet is the workhorse for all subagents; planning and review go to Opus. Subagent reports come back as path:line findings.
+**Subagents.** Run subagents for multi-task work, and spawn them if you said you would. Sonnet is the workhorse for all subagents; planning and review go to Opus. Subagent reports come back as path:line findings. When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
 
 ## Git
 
-Trunk-based: commit and merge to main locally, and push only when asked. Delete merged branches and worktrees, and gitignore generated artifacts. Commit messages are conventional, why over what; a body is required for breaking changes, security fixes, migrations, and reverts.
+Trunk-based: commit finished work yourself once the project's checks pass, and push only when asked. Merge to main locally, delete merged branches and worktrees, and gitignore generated artifacts. Commit messages are conventional, why over what; a body is required for breaking changes, security fixes, migrations, and reverts.
 
 ## Bug fixing
 
