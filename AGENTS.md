@@ -44,7 +44,9 @@ declares its own `jinja2`/`pyyaml` deps, so it runs standalone regardless of `.v
    `targets.yaml` is a hard `ConfigError`, not a silent blank. The template's
    `work` variable selects between its two profiles (full prose vs terse);
    `--work` deploys the terse one, but every run renders both, to `rendered/`
-   and `rendered/work/`. Edit both branches of a section, or the profiles diverge.
+   and `rendered/work/`. Only the opening, the Output section, and the Subagents
+   model sentence branch on `work`; everything else is shared text, so keep a new
+   rule outside the branches unless it truly differs between profiles.
 3. `classify(target, new)` — the core state machine, and the place to start when
    changing behavior. Returns one of `no-file`, `no-snapshot`, `drifted`,
    `converged`, `pending`, `clean` from the three-way comparison of *baseline* vs

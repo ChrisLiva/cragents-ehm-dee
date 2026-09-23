@@ -35,8 +35,9 @@ write error.
 ## Work profile
 
 The template carries two profiles behind a `work` variable: the full-prose
-default, and a terse token-minimal variant for work machines (`{% if work %}`
-branches, section by section, so an edit can't silently miss one profile).
+default, and a terse token-minimal variant for work machines. Only the output
+rules and the subagent model names sit in `{% if work %}` branches; every other
+rule is shared text, so an edit to it reaches both profiles.
 `./sync.py --work` deploys the terse profile; a plain run deploys full prose.
 Every run renders **both** profiles — full prose to `rendered/`, terse to
 `rendered/work/` — so both stay committed and reviewable; only the selected
