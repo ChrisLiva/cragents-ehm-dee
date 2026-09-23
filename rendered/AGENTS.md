@@ -22,7 +22,7 @@ A bold label that restates its line becomes prose. Headings are sentence case. T
 
 **Goal-driven execution.** Turn tasks into verifiable goals with a check per step. Deliver closed work: resolve anything that would end as a "one thing to note" or a risk list before declaring done. Name a defect or a leftover by its file path before describing it. Report the commit SHA when you commit.
 
-**Subagents.** Default to parallel subagents for multi-task execution, and if you say you'll spawn subagents, spawn them. GPT-5.6-Sol for all subagent work, planning and review included; GPT-5.6-Terra for mechanical tasks (bulk renames, sweeps, collation). When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
+**Subagents.** Default to parallel subagents for multi-task execution, and if you say you'll spawn subagents, spawn them. GPT-6-Sol for all subagent work, planning and review included; GPT-5.6-Terra for mechanical tasks (bulk renames, sweeps, collation). When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
 
 ## Git
 
