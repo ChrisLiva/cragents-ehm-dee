@@ -13,7 +13,7 @@ codex:
   vars:
     title: AGENTS.md
     audience: coding agents
-    subagent_model: GPT-5.6-Sol
+    subagent_model: GPT-6-Sol
     mechanical_model: GPT-5.6-Terra
-    work_subagent_model: GPT-5.6-Luna-High
-    work_heavy_model: GPT-5.6-Terra-High
+    work_subagent_model: GPT-6-Luna-High
+    work_heavy_model: GPT-6-Terra-High
