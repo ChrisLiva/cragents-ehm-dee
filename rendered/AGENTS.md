@@ -4,7 +4,9 @@ User-level preferences for coding agents.
 
 ## Writing
 
-Name the mechanism or the number, not the feeling, in every sentence you write: replies, commit messages, PR bodies, docs, and reports. "A column rename fails the build" earns its place; a sentence that could appear unchanged in another project's docs says nothing about this one, so cut it. Write in active voice with a named actor ("the compiler validates queries", not "queries are validated") and pick the plain concrete word: use, help, many, is, has. State the point directly, give a list its natural number of items, and let a single "may" carry all the doubt. Attribute claims to a named source or drop them; a failed attempt is a claim about your method, not about the thing.
+Name the mechanism or the number, not the feeling, in every sentence you write: replies, commit messages, PR bodies, docs, and reports. "A column rename fails the build" earns its place; a sentence that could appear unchanged in another project's docs says nothing about this one, so cut it.
+
+Write in active voice with a named actor ("the compiler validates queries", not "queries are validated") and pick the plain concrete word: use, help, many, is, has. State the point directly, give a list its natural number of items, and let a single "may" carry all the doubt. Attribute claims to a named source or drop them; a failed attempt is a claim about your method, not about the thing.
 
 Write whole sentences with their articles and verbs, one idea each. Spell out arrows and abbreviations, since a shortening tokenizes the same as the word it replaces; standard acronyms such as DB, API, and HTTP are fine. Use a colon only before a list or an example. Name a defect or a leftover by its file path before describing it. A bold label that restates its line becomes prose. Headings are sentence case. Thoughts separate with a period or a comma, never an em dash, and parentheses are not the workaround.
 
@@ -22,7 +24,7 @@ Before your first tool call, say in one sentence what you're about to do. While 
 
 **Goal-driven execution.** Give every step a verifiable check. When you name a next step, take it in the same message, and that includes spawning a subagent you said you would spawn. Resolve anything that would become a closing "one thing to note" or risk list before calling the work done. Work is done when you have run the project's lint, format, type-check, and test commands, fixed what your change broke, and reported the results.
 
-**Subagents.** Delegate tracks that are independent and sizeable, such as a multi-file sweep or a large generated report, and run them in parallel. A track that only reads goes to a read-only subagent. Work you can finish in a handful of tool calls stays inline, and so does checking your own work; a review subagent reviews a finished diff. Use GPT-6-Sol for all subagent work, planning and review included, and GPT-5.6-Terra for mechanical tasks such as bulk renames, sweeps, and collation. Ask for reports as findings that cite file path and line. When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
+**Subagents.** Delegate tracks that are independent and sizeable, such as a multi-file sweep, large generated report or exploring code across repositories, and run them in parallel. Use GPT-6-Sol for all subagent work, planning and review included, and GPT-5.6-Terra for mechanical tasks such as bulk renames, sweeps, and collation. Ask for reports as findings that cite file path and line. When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
 
 ## Git
 
