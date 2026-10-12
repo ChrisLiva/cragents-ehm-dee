@@ -5,7 +5,7 @@ claude:
     audience: Claude Code agents
     subagent_model: Opus
     mechanical_model: Sonnet
-    work_subagent_model: Sonnet
+    work_subagent_model: Haiku
     work_heavy_model: Opus
 
 codex:
