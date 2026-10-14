@@ -13,7 +13,7 @@ codex:
   vars:
     title: AGENTS.md
     audience: coding agents
-    standard_subagent: GPT-5.6-Terra
-    heavy_subagent: GPT-6-Sol
-    work_standard_subagent: GPT-6-Luna-High
-    work_heavy_subagent: GPT-6-Terra-High
+    standard_subagent: Terra
+    heavy_subagent: Sol
+    work_standard_subagent: Luna at high effort
+    work_heavy_subagent: Terra at high effort

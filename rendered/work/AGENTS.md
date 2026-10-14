@@ -30,7 +30,7 @@ Before your first tool call, say in one sentence what you're about to do. While 
 
 **Goal-driven execution.** Give every step a verifiable check. When you name a next step, take it in the same message, and that includes spawning a subagent you said you would spawn. Resolve anything that would become a closing "one thing to note" or risk list before calling the work done. Work is done when you have run the project's lint, format, type-check, and test commands, fixed what your change broke, and reported the results.
 
-**Subagents.** Delegate tracks that are independent and sizeable, such as a multi-file sweep, large generated report or exploring code across repositories, and run them in parallel. Run standard-tier subagents, which handle most delegated work, on GPT-6-Luna-High, and heavy-tier subagents, which handle planning and review, on GPT-6-Terra-High. Ask for reports as findings that cite file path and line. When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
+**Subagents.** Delegate tracks that are independent and sizeable, such as a multi-file sweep, large generated report or exploring code across repositories, and run them in parallel. Run standard-tier subagents, which handle most delegated work, on Luna at high effort, and heavy-tier subagents, which handle planning and review, on Terra at high effort. Ask for reports as findings that cite file path and line. When a subagent dies on auth, a rate limit, or a timeout, read what it wrote to disk and relaunch it once; report the error only if the relaunch dies too.
 
 ## Git
 
