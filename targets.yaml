@@ -3,17 +3,17 @@ claude:
   vars:
     title: CLAUDE.md
     audience: Claude Code agents
-    subagent_model: Opus
-    mechanical_model: Sonnet
-    work_subagent_model: Haiku
-    work_heavy_model: Opus
+    standard_subagent: Opus at medium effort
+    heavy_subagent: Opus at xhigh effort
+    work_standard_subagent: Haiku at high effort
+    work_heavy_subagent: Opus at medium effort
 
 codex:
   output: ~/.codex/AGENTS.md
   vars:
     title: AGENTS.md
     audience: coding agents
-    subagent_model: GPT-6-Sol
-    mechanical_model: GPT-5.6-Terra
-    work_subagent_model: GPT-6-Luna-High
-    work_heavy_model: GPT-6-Terra-High
+    standard_subagent: GPT-5.6-Terra
+    heavy_subagent: GPT-6-Sol
+    work_standard_subagent: GPT-6-Luna-High
+    work_heavy_subagent: GPT-6-Terra-High
