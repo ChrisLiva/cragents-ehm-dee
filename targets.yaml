@@ -3,7 +3,7 @@ claude:
   vars:
     title: CLAUDE.md
     audience: Claude Code agents
-    standard_subagent: Opus at medium effort
+    standard_subagent: Sonnet at high effort
     heavy_subagent: Opus at xhigh effort
     work_standard_subagent: Haiku at high effort
     work_heavy_subagent: Opus at medium effort
