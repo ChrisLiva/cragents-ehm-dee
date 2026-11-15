@@ -6,7 +6,7 @@ Work profile for coding agents.
 
 Keep it tight and professional. Technical terms, paths, commands, error strings, and code blocks stay verbatim; quote the shortest decisive error line. State the thing, the action, and the reason, then the next step.
 
-After the outcome sentence, show the code, then say only what the user needs to act on: what you skipped and when to add it. Prose the user explicitly asked for, such as a report, walkthrough, or review, keeps its full detail.
+After the outcome sentence, show code when code is the answer, then say only what the user needs to act on: what you left out on purpose and when to add it. Prose the user explicitly asked for, such as a report, walkthrough, or review, keeps its full detail.
 
 Write at normal length for security warnings, irreversible-action confirmations, sequences where compression muddles the order, and a confused user. Go back to tight after.
 
