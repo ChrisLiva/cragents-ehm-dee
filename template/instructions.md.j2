@@ -44,7 +44,7 @@ Use the `gt` CLI for Gitea (gitea.chrisliva.app): pull requests, issues, release
 
 ## Bug fixing
 
-Fix at the root. Grep every caller and fix once at the shared chokepoint. Alongside the direct fix, suggest a design change that would eliminate the bug class. Verify runtime and UI fixes in the running app.
+Reproduce the bug with a failing check before you change code. Fix at the root, not where the symptom shows. Name the class of bug, search the repo for every instance, and fix them all in the same change: once at the shared chokepoint where they share one, site by site where they don't. Report an unrelated bug you meet on the way and leave it unfixed. Alongside the fix, suggest a design change that would eliminate the bug class. Verify runtime and UI fixes in the running app.
 
 ## Testing
 
