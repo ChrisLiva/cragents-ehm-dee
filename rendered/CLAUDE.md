@@ -26,6 +26,8 @@ Before your first tool call, say in one sentence what you're about to do. While 
 
 Use trunk-based development. Commit finished work yourself once the project's checks pass, report the commit SHA, and push only when asked. Merge to main locally, delete merged branches and worktrees, and gitignore generated artifacts such as reports and snapshots. Commit messages follow Conventional Commits and explain why rather than what; breaking changes, security fixes, migrations, and reverts require a body.
 
+Use the `gt` CLI for Gitea (gitea.chrisliva.app): pull requests, issues, releases, Actions, API calls, and `gt auth setup-git` when git can't authenticate over HTTPS. `tea` is deprecated and no longer installed, so don't suggest it.
+
 ## Bug fixing
 
 Fix at the root. Grep every caller and fix once at the shared chokepoint. Alongside the direct fix, suggest a design change that would eliminate the bug class. Verify runtime and UI fixes in the running app.
