@@ -44,7 +44,7 @@ declares its own `jinja2`/`pyyaml` deps, so it runs standalone regardless of `.v
    `targets.yaml` is a hard `ConfigError`, not a silent blank. The template's
    `work` variable selects between its two profiles (full prose vs terse);
    `--work` deploys the terse one, but every run renders both, to `rendered/`
-   and `rendered/work/`. Only the opening, the Output section, the Subagents
+   and `rendered/work/`. Only the opening line, the Subagents
    model sentence, and the Gitea paragraph (full prose only) branch on `work`;
    everything else is shared text, so keep a new
    rule outside the branches unless it truly differs between profiles.
